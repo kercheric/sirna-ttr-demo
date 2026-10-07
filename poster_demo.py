@@ -990,10 +990,11 @@ def _(mo):
 def _(META, mo):
     mo.md(rf"""
     ---
+    That's it! Ready to design your own siRNAs? Head to the [siRNA Toolkit](https://sirna-toolkit.streamlit.app) to get started.
 
     *This demo was built with a snapshot from the siRNA Toolkit pipeline. Run: {META['source']}, frozen {META['generated']}.*
 
-    *Ready to design your own siRNAs? Head to the [siRNA Toolkit](https://sirna-toolkit.streamlit.app)*
+    *Designed and written by Eric Kercher, PhD and Claude, with help and support from the folks at the RNA Therapeutics Institute @ UMass Chan.* 
     """)
     return
 
