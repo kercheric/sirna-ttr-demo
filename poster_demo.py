@@ -351,24 +351,31 @@ def _(
             ), row=2, col=1)
 
         # --- both drugs, marked in both rows ---
-        for d in DRUGS:
+        # The two sites are nine nucleotides apart on a 616 nt axis, so
+        # centred labels at a common height overprint each other into an
+        # unreadable smudge. Stack them instead, nearest site lowest, and
+        # give each a leader down to its own dashed line.
+        for i, d in enumerate(sorted(DRUGS, key=lambda x: x["position"])):
             for r in (1, 2):
                 fig.add_shape(type="line", x0=d["position"], x1=d["position"],
                               y0=0, y1=1, yref=f"y{'' if r == 1 else '2'} domain",
                               line=dict(color=d["color"], width=1.6,
                                         dash="dash"),
                               row=r, col=1)
-            fig.add_annotation(x=d["position"], y=1.04, yref="y domain",
-                               text=d["name"], showarrow=False,
-                               font=dict(color=d["color"], size=11),
-                               row=1, col=1)
+            fig.add_annotation(
+                x=d["position"], y=1.10 + 0.42 * i, yref="y domain",
+                text=d["name"], showarrow=True, arrowhead=0, arrowwidth=1,
+                arrowcolor=d["color"], ax=0, ay=-10,
+                font=dict(color=d["color"], size=11),
+                xanchor="center", row=1, col=1)
 
         fig.update_yaxes(title_text="GC %", range=(0, 100), row=2, col=1)
         fig.update_xaxes(title_text=f"position on {META['accession']} (nt)",
                          range=(0, L), row=2, col=1)
-        base_layout(fig, height=430)
-        fig.update_layout(legend=dict(y=1.02, x=0, xanchor="left"))
-        fig.update_annotations(font_size=11)
+        base_layout(fig, height=450)
+        # Extra headroom: the stacked drug labels sit above the top row.
+        fig.update_layout(margin=dict(l=58, r=18, t=62, b=46),
+                          legend=dict(y=1.06, x=0, xanchor="left"))
         return fig
 
     _lo, _hi = gc_window.value
