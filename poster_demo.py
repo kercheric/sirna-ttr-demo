@@ -330,8 +330,10 @@ def _(META, mo):
     15–56 %.
 
     **Drag the window and watch where the rejects fall.** They are not
-    evenly spread — and the region both drugs bind is among the last to
-    be lost.
+    evenly spread, and the two bounds bite in opposite places: tightening
+    from above cuts the GC-rich coding sequence, while raising the floor
+    eats into the AT-rich 3′UTR — the very region both drugs bind. At the
+    conventional setting only the upper bound fires at all.
     """)
     return
 
@@ -365,10 +367,19 @@ def _(
     mo,
 ):
     def transcript_figure(lo, hi):
-        """Transcript map above, GC against position below, shared x."""
+        """Transcript map, GC against position, admitted strip.
+
+        Three rows on one shared x axis, so a candidate lines up
+        vertically across all of them. The bottom strip repeats the
+        verdict as a tick at each transcript position -- the same idiom
+        section 3 uses for conservation survivors -- because the scatter
+        answers "how many and at what GC" while the strip answers "where
+        along the transcript", which is the question a count cannot.
+        """
         L = META["length"]
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                            row_heights=[0.3, 0.7], vertical_spacing=0.06)
+        fig = make_subplots(rows=3, cols=1, shared_xaxes=True,
+                            row_heights=[0.26, 0.56, 0.18],
+                            vertical_spacing=0.05)
 
         # --- row 1: exons to scale, UTRs tinted over the ends ---
         for i, (a, b) in enumerate(META["exons"]):
@@ -406,15 +417,16 @@ def _(
                 hovertemplate="position %{x}<br>GC %{y:.0f}%<extra></extra>",
             ), row=2, col=1)
 
-        # --- both drugs, marked in both rows ---
+        # --- both drugs, marked in every row ---
         # The two sites are nine nucleotides apart on a 616 nt axis, so
         # centred labels at a common height overprint each other into an
         # unreadable smudge. Stack them instead, nearest site lowest, and
         # give each a leader down to its own dashed line.
         for i, d in enumerate(sorted(DRUGS, key=lambda x: x["position"])):
-            for r in (1, 2):
+            for r in (1, 2, 3):
                 fig.add_shape(type="line", x0=d["position"], x1=d["position"],
-                              y0=0, y1=1, yref=f"y{'' if r == 1 else '2'} domain",
+                              y0=0, y1=1,
+                              yref=f"y{'' if r == 1 else r} domain",
                               line=dict(color=d["color"], width=1.6,
                                         dash="dash"),
                               row=r, col=1)
@@ -425,10 +437,27 @@ def _(
                 font=dict(color=d["color"], size=11),
                 xanchor="center", row=1, col=1)
 
+        # --- row 3: the same verdict as a tick strip along the transcript
+        # Every candidate is a faint grey tick; the admitted ones are
+        # overdrawn taller and green. Where the window bites is then read
+        # off the transcript directly, rather than inferred from a cloud.
+        fig.add_trace(go.Scattergl(
+            x=CAND["pos"], y=[0] * len(CAND), mode="markers",
+            marker=dict(size=5, color=GATE_OUT, symbol="line-ns-open",
+                        line=dict(width=1.1, color=GATE_OUT)),
+            hoverinfo="skip", showlegend=False), row=3, col=1)
+        if len(inside):
+            fig.add_trace(go.Scattergl(
+                x=inside["pos"], y=[0] * len(inside), mode="markers",
+                marker=dict(size=9, color=GATE_IN, symbol="line-ns-open",
+                            line=dict(width=1.5, color=GATE_IN)),
+                hoverinfo="skip", showlegend=False), row=3, col=1)
+        fig.update_yaxes(visible=False, range=(-1, 1), row=3, col=1)
+
         fig.update_yaxes(title_text="GC %", range=(0, 100), row=2, col=1)
         fig.update_xaxes(title_text=f"position on {META['accession']} (nt)",
-                         range=(0, L), row=2, col=1)
-        base_layout(fig, height=450)
+                         range=(0, L), row=3, col=1)
+        base_layout(fig, height=520)
         # Extra headroom: the stacked drug labels sit above the top row.
         fig.update_layout(margin=dict(l=58, r=18, t=62, b=46),
                           legend=dict(y=1.06, x=0, xanchor="left"))
