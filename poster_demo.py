@@ -253,7 +253,7 @@ def _(IS_LIVE, META, mo):
 
     **Clinical motivation.** Transthyretin is a liver-made protein
     that ferries thyroxine and retinol through the blood. Destabilising
-    point mutations disrupt homeostatic trafficking which leads to progressive
+    point mutations disrupt protein folding which leads to progressive
     sensorimotor and autonomic **polyneuropathy**, a restrictive
     **cardiomyopathy**, or both. If left untreated, the disease is fatal.
 
@@ -266,7 +266,7 @@ def _(IS_LIVE, META, mo):
       does. 
     - **One tissue makes it.** Essentially all circulating TTR comes from
       hepatocytes — and hepatocytes are the one cell type oligonucleotide
-      delivery has genuinely solved, through the GalNAc conjugation.
+      delivery has genuinely solved, via GalNAc conjugation.
     - **The target is dispensable.** Deep, sustained knockdown is well
       tolerated: thyroxine transport is redundant, and retinol transport
       is covered by vitamin A supplementation.
@@ -993,7 +993,7 @@ def _(META, mo):
 
     *This demo was built with a snapshot from the siRNA Toolkit pipeline. Run: {META['source']}, frozen {META['generated']}.*
 
-    *Ready to design your own siRNAs? Head to the [siRNA Toolkit](sirna-toolkit.streamlit.app)*
+    *Ready to design your own siRNAs? Head to the [siRNA Toolkit](https://sirna-toolkit.streamlit.app)*
     """)
     return
 
